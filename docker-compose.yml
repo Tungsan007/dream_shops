@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: dream-shops-app
+    ports:
+      - "9193:9193"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/dreamshops_database
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=santungnguyen0365607709
+    depends_on:
+      db:
+        condition: service_healthy   # ← Chờ MySQL sẵn sàng hẳn mới start app
+    restart: always
+
+  db:
+    image: mysql:8
+    container_name: dream-shops-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=dreamshops_database
+      - MYSQL_ROOT_PASSWORD=santungnguyen0365607709
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+volumes:
+  mysql_data:

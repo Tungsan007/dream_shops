@@ -122,4 +122,13 @@ public class ProductServiceTest {
 
     }
 
+    @Test
+    void deleteProductById_whenProductFounded() {
+        when(productRepository.findById(1L)).thenReturn(Optional.of(fakeProduct));
+
+        productService.deleteProductById(1L);
+
+        verify(productRepository, times(1)).delete(fakeProduct);
+    }
+
 }
