@@ -1,6 +1,7 @@
 package com.dailycodework.dream_shops.controller;
 
 import com.dailycodework.dream_shops.dto.ImageDto;
+import com.dailycodework.dream_shops.exceptions.ResourcesNotFoundException;
 import com.dailycodework.dream_shops.model.Image;
 import com.dailycodework.dream_shops.response.ApiResponse;
 import com.dailycodework.dream_shops.service.image.IImageService;
@@ -17,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 @RestController
 @RequestMapping("${api.prefix}/images")
 @RequiredArgsConstructor
@@ -30,15 +33,41 @@ public class ImageController {
             List<ImageDto> imageDtos = imageService.saveImage(files, productId);
             return ResponseEntity.ok(new ApiResponse("Upload success!", imageDtos));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Upload failed!", e.getMessage()));
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Upload failed!", e.getMessage()));
         }
     }
-
+    @GetMapping("/image/download/{imageId}")
     public ResponseEntity<Resource> downloadImage(@PathVariable Long imageId) throws SQLException {
         Image image = imageService.getImageById(imageId);
         ByteArrayResource resource = new ByteArrayResource(image.getImage().getBytes(1, (int) image.getImage().length()));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getFileName() + "\"")
                 .body(resource);
+    }
+    @PostMapping("/image/{imageId}/update")
+    public ResponseEntity<ApiResponse> updateImage(
+            @PathVariable Long imageId,
+            @RequestParam MultipartFile file) {
+        try {
+            imageService.updateImage(file, imageId);
+            return ResponseEntity.ok(new ApiResponse("Update success!", null));
+        } catch (ResourcesNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("Update failed!", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("Update failed!", e.getMessage()));
+        }
+    }
+    @DeleteMapping("/image/{imageId}/delete")
+    public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId) {
+        try {
+            imageService.deleteImageById(imageId);
+            return ResponseEntity.ok(new ApiResponse("Delete success!", null));
+        } catch (ResourcesNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Delete failed!", e.getMessage()));
+        } catch(Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Delete failed", e.getMessage()));
+        }
     }
 }
