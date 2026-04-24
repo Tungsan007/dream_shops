@@ -67,9 +67,15 @@ public class CategoryController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Not found", e.getMessage()));
         }
     }
+    @PutMapping("/category/{categoryId}/update")
+    public ResponseEntity<ApiResponse> updateCategory(@RequestBody Category categoryRequest, @PathVariable Long categoryId) {
+        try {
+            Category category = categoryService.updateCategory(categoryId, categoryRequest);
+            return ResponseEntity.ok(new ApiResponse("Update success!", category));
+        } catch (CategoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Update failed!", e.getMessage()));
+        }
 
-//    public ResponseEntity<ApiResponse> updateCategory(@RequestBody Category category) {
-//
-//    }
+    }
 
 }

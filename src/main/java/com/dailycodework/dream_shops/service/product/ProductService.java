@@ -56,13 +56,13 @@ public class ProductService implements IProductService {
     @Override
     public Product updateProduct(Long productId, UpdateProductRequest request) {
        return productRepository.findById(productId)
-               .map(existingProduct -> updateProduct(existingProduct, request))
+               .map(existingProduct -> updateExistingProduct(existingProduct, request))
                .map(productRepository::save)
                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
     }
 
-    public Product updateProduct(Product existingProduct, UpdateProductRequest request) {
+    public Product updateExistingProduct(Product existingProduct, UpdateProductRequest request) {
         existingProduct.setName(request.getName());
         existingProduct.setBrand(request.getBrand());
         existingProduct.setPrice(request.getPrice());
