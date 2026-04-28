@@ -99,7 +99,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/products/by-brand")
+    @GetMapping("/by-brand")
     public ResponseEntity<ApiResponse> getProductByBrand(@RequestParam String brandName) {
         try {
             List<Product> products = productService.getProductsByBrandName(brandName);
@@ -112,12 +112,12 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/products/by-category")
+    @GetMapping("/by-category")
     public ResponseEntity<ApiResponse> getProductByCategoryName(@RequestParam String categoryName) {
         try {
             List<Product> products = productService.getProductsByCategoryName(categoryName);
             if (products.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("No product found", NOT_FOUND));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("No category found", NOT_FOUND));
             }
             return ResponseEntity.ok(new ApiResponse("Found!", products));
         } catch (Exception e) {
