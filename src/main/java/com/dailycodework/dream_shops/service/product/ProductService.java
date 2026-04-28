@@ -7,12 +7,14 @@ import com.dailycodework.dream_shops.repository.CategoryRepository;
 import com.dailycodework.dream_shops.repository.ProductRepository;
 import com.dailycodework.dream_shops.requests.AddProductRequest;
 import com.dailycodework.dream_shops.requests.UpdateProductRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ProductService implements IProductService {
 
@@ -22,11 +24,19 @@ public class ProductService implements IProductService {
     private CategoryRepository categoryRepository;
 
     @Override
+
     public Product addProduct(AddProductRequest request) {
+        log.info(">>> Request nhận được: {}", request);
+        log.info(">>> Category object: {}", request.getCategory());
+        log.info(">>> Category name: {}", request.getCategory().getName());
         Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
                 .orElseGet(() -> {
+                    log.info(">>> Không tìm thấy → Tạo category mới");
                     Category newCategory = new Category(request.getCategory().getName());
-                    return categoryRepository.save(newCategory);
+                    log.info(">>> Category trước khi save: {}", newCategory);
+                    Category saved = categoryRepository.save(newCategory);
+                    log.info(">>> Category sau khi save: {}", saved);
+                    return saved;
                 });
         request.setCategory(category);
         return productRepository.save(createProduct(request, category));
@@ -46,6 +56,11 @@ public class ProductService implements IProductService {
     @Override
     public Product getProductById(Long id) {
         return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found!"));
+    }
+
+    @Override
+    public List<Product> getProductsByName(String name) {
+        return productRepository.findByName(name);
     }
 
     @Override

@@ -20,4 +20,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByBrandAndName(String productName, String brandName);
 
     List<Product> countByBrandAndName(String brandName, String productName);
+
+    List<Product> findByName(String name);
 }
