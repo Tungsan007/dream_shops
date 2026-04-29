@@ -71,7 +71,12 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope> <!-- chỉ dùng khi test, không ảnh hưởng production -->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.modelmapper.extensions</groupId>
+            <artifactId>modelmapper-spring</artifactId>
+            <version>3.2.4</version>
         </dependency>
 	</dependencies>
 
