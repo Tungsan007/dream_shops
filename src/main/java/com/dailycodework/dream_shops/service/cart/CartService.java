@@ -6,8 +6,10 @@ import com.dailycodework.dream_shops.repository.CartItemRepository;
 import com.dailycodework.dream_shops.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +17,7 @@ public class CartService implements ICartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final AtomicLong cartIdGenerator = new AtomicLong(0);
 
     @Override
     public Cart getCart(Long id) {
@@ -24,6 +27,7 @@ public class CartService implements ICartService {
         return cartRepository.save(cart);
     }
 
+    @Transactional
     @Override
     public void clearCart(Long id) {
         Cart cart = getCart(id);
@@ -36,5 +40,13 @@ public class CartService implements ICartService {
     public BigDecimal getTotalPrice(Long id) {
         Cart cart = getCart(id);
         return cart.getTotalAmount();
+    }
+
+    @Override
+    public Long initializeNewCart() {
+        Cart cart = new Cart();
+//        Long newCartId = cartIdGenerator.incrementAndGet();
+//        cart.setId(newCartId);
+        return cartRepository.save(cart).getId();
     }
 }
