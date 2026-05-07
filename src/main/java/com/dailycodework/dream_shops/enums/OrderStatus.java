@@ -1,6 +1,6 @@
 package com.dailycodework.dream_shops.enums;
 
-public enum OrderItem {
+public enum OrderStatus {
     PENDING,
     PROCESSING,
     SHIPPED,
