@@ -1,5 +1,6 @@
 package com.dailycodework.dream_shops.service.user;
 
+import com.dailycodework.dream_shops.exceptions.AlreadyExistsException;
 import com.dailycodework.dream_shops.exceptions.ResourcesNotFoundException;
 import com.dailycodework.dream_shops.model.User;
 import com.dailycodework.dream_shops.repository.UserRepository;
@@ -7,6 +8,8 @@ import com.dailycodework.dream_shops.requests.CreateUserRequest;
 import com.dailycodework.dream_shops.requests.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +24,17 @@ public class UserService implements IUserService{
 
     @Override
     public User createUser(CreateUserRequest request) {
-        return null;
+        return Optional.of(request)
+                .filter(user -> !userRepository.existByEmail(request.getEmail()))
+                .map(req -> {
+                    User user = new User();
+                    user.setLastName(req.getLastName());
+                    user.setFirstName(req.getFirstName());
+                    user.setEmail(req.getEmail());
+                    user.setPassword(req.getPassword());
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new AlreadyExistsException("Email address already exist. Failed to create user!"));
     }
 
     @Override
