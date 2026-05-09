@@ -1,5 +1,6 @@
 package com.dailycodework.dream_shops.controller;
 
+import com.dailycodework.dream_shops.dto.OrderDto;
 import com.dailycodework.dream_shops.exceptions.ResourcesNotFoundException;
 import com.dailycodework.dream_shops.model.Order;
 import com.dailycodework.dream_shops.response.ApiResponse;
@@ -31,7 +32,7 @@ public class OrderController {
     @GetMapping("/{orderId}/order")
     public ResponseEntity<ApiResponse> getOrderById(@PathVariable Long orderId) {
         try {
-            Order order = orderService.getOrder(orderId);
+            OrderDto order = orderService.getOrder(orderId);
             return ResponseEntity.ok(new ApiResponse("Success", order));
         } catch (ResourcesNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Not found", e.getMessage()));
@@ -41,7 +42,7 @@ public class OrderController {
     @GetMapping("/{userId}/orders")
     public ResponseEntity<ApiResponse> getUserOrders(@PathVariable Long userId) {
         try {
-            List<Order> orders = orderService.getUserOrders(userId);
+            List<OrderDto> orders = orderService.getUserOrders(userId);
             return ResponseEntity.ok(new ApiResponse("Success", orders));
         } catch (ResourcesNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Not found", e.getMessage()));
