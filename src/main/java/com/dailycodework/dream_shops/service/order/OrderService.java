@@ -28,7 +28,7 @@ public class OrderService implements IOrderService {
     private final ModelMapper modelMapper;
 
     @Override
-    public Order placeOrder(Long userId) {
+    public OrderDto placeOrder(Long userId) {
         Cart cart = cartService.getCartByUserId(userId);
 
         Order order = createOrder(cart);
@@ -42,7 +42,7 @@ public class OrderService implements IOrderService {
 
         cartService.clearCart(cart.getId());
 
-        return savedOrder;
+        return convertToDto(savedOrder);
     }
 
     private Order createOrder(Cart cart) {
