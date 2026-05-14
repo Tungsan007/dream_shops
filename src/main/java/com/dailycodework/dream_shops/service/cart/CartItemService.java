@@ -7,6 +7,7 @@ import com.dailycodework.dream_shops.model.Product;
 import com.dailycodework.dream_shops.repository.CartItemRepository;
 import com.dailycodework.dream_shops.repository.CartRepository;
 import com.dailycodework.dream_shops.service.product.IProductService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,8 @@ public class CartItemService implements ICartItemService{
     private final IProductService productService;
     private final ICartService cartService;
     private final CartRepository cartRepository;
+
+    @Transactional
     @Override
     public void addItemToCart(Long cartId, Long productId, int quantity) {
         //1. Get the cart

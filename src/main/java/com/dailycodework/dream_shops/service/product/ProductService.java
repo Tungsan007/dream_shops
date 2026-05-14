@@ -2,6 +2,7 @@ package com.dailycodework.dream_shops.service.product;
 
 import com.dailycodework.dream_shops.dto.ImageDto;
 import com.dailycodework.dream_shops.dto.ProductDto;
+import com.dailycodework.dream_shops.exceptions.AlreadyExistsException;
 import com.dailycodework.dream_shops.exceptions.ProductNotFoundException;
 import com.dailycodework.dream_shops.model.Category;
 import com.dailycodework.dream_shops.model.Image;
@@ -33,11 +34,11 @@ public class ProductService implements IProductService {
     private ImageRepository imageRepository;
 
     @Override
-
     public Product addProduct(AddProductRequest request) {
-        log.info(">>> Request nhận được: {}", request);
-        log.info(">>> Category object: {}", request.getCategory());
-        log.info(">>> Category name: {}", request.getCategory().getName());
+        if (productExists(request.getName(), request.getBrand())) {
+            throw new AlreadyExistsException("Product with the same name and brand already exists");
+        }
+
         Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
                 .orElseGet(() -> {
                     log.info(">>> Không tìm thấy → Tạo category mới");
@@ -49,6 +50,10 @@ public class ProductService implements IProductService {
                 });
         request.setCategory(category);
         return productRepository.save(createProduct(request, category));
+    }
+
+    private boolean productExists(String name, String brand) {
+        return productRepository.existsByNameAndBrand(name, brand);
     }
 
     public Product createProduct(AddProductRequest request, Category category) {

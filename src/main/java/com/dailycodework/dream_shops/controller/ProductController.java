@@ -1,6 +1,7 @@
 package com.dailycodework.dream_shops.controller;
 
 import com.dailycodework.dream_shops.dto.ProductDto;
+import com.dailycodework.dream_shops.exceptions.AlreadyExistsException;
 import com.dailycodework.dream_shops.exceptions.ProductNotFoundException;
 import com.dailycodework.dream_shops.model.Product;
 import com.dailycodework.dream_shops.requests.AddProductRequest;
@@ -53,8 +54,8 @@ public class ProductController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("No product found", NOT_FOUND));
             }
             return ResponseEntity.ok(new ApiResponse("Added successfully", productDto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Failed!", e.getMessage()));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse("Failed!", e.getMessage()));
         }
     }
     @PutMapping("/product/{productId}/update")
